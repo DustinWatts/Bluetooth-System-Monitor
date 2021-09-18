@@ -23,7 +23,7 @@ To use this sketch, you will need the Arduino IDE (1.8.10 or higher). You will a
 
 This sketch uses the latest version of TFT_eSPI, available here: https://github.com/Bodmer/TFT_eSPI
 
-Before uploading the sketch, configure the TFT_eSPI library to use the correct pins. You will need to edit the User_Setup.h that comes with the TFT_eSPI library. You can find examples user setups for this project here: [https://github.com/DustinWatts/Bluetooth-System-Monitor/user_setup.h Examples](https://github.com/DustinWatts/Bluetooth-System-Monitor/user_setup.h%20Examples)
+Before uploading the sketch, configure the TFT_eSPI library to use the correct pins. You will need to edit the User_Setup.h that comes with the TFT_eSPI library. You can find examples user setups for this project here: [https://github.com/DustinWatts/Bluetooth-System-Monitor/tree/main/user_setup.h Examples](https://github.com/DustinWatts/Bluetooth-System-Monitor/tree/main/user_setup.h%20Examples)
 
 
 
