@@ -1,7 +1,7 @@
 # Bluetooth-System-Monitor
  ![alt text](/assets/main_image.jpg "Bluetooth-System-Monitor")
- 
- A simple system information monitor using and ESP32 + ILI9488 TFT. Receives data over Serial Bluetooth and thus giving you the option to have it far away from your actual computer. On the computer side you can write your own program for writing over Serial BT, but I have provided python scripts for both Windows and MacOS. Instructions on how to install and use these are below.
+
+ A handy little system information monitor using and ESP32 + ILI9488 TFT. Receives data over Serial Bluetooth and thus giving you the option to have it far away from your actual computer. On the computer side you can write your own program for writing over Serial BT, but I have provided python scripts for both Windows and MacOS. Instructions on how to install and use these are below.
 
 # Connecting the screen
 
