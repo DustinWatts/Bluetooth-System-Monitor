@@ -49,6 +49,7 @@ Docs on psutil: http://pythonnet.github.io/
 
 **This script needs administrator rights to get system info.**
 
+Look in the script for the place to change the COM port to match the COM port of the ESP32:
 
  ![alt text](/assets/windows_comport.png "COM Port on Windows")
 
