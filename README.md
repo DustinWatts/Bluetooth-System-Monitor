@@ -50,6 +50,11 @@ Docs on psutil: https://psutil.readthedocs.io/en/latest/
 This script needs administrator right to get system info. So to run:
 `sudo python macos_host.py`
 
+On MacOS connection to a COM port is done using it's name. If you have not changed the name, this python script already had the correct COM port in it, so there is no need to change this.
+
+ ![alt text](/assets/macos_comport.png "COM Port on MacOS")
+
+
 # Help
 
 You can join my Discord server where I can help you out. https://discord.gg/RE3XevS
