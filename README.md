@@ -25,9 +25,12 @@ This sketch uses the latest version of TFT_eSPI, available here: https://github.
 
 Before uploading the sketch, configure the TFT_eSPI library to use the correct pins. You will need to edit the User_Setup.h that comes with the TFT_eSPI library. You can find examples user setups for this project here: [https://github.com/DustinWatts/Bluetooth-System-Monitor/tree/main/user_setup.h Examples](https://github.com/DustinWatts/Bluetooth-System-Monitor/tree/main/user_setup.h%20Examples)
 
+In the sketch, you can set some warning levels. This will turn the text read if above a certain value. In case of RAM, it will alert when it is under the warning value.
 
+ ![alt text](/assets/warning_levels.png "Warning leves")
 
-Open the sketch in the Arduino IDE. Select the right board, the right port and hit 'Upload'
+Open the sketch in the Arduino IDE. Select the right board, the right port and hit 'Upload'. After this, you will also need to upload the `data` folder. Because the background image also needs to be uploaded. You can use the "ESP Sketch Data Upload" tool that can be found here: https://github.com/me-no-dev/arduino-esp32fs-plugin
+![ESP Sketch Data](http://dustinwatts.nl/freetouchdeck/images/ftd_esp_sketch_data.png)
 
 # Computer side installation
 
