@@ -34,7 +34,23 @@ Open the sketch in the Arduino IDE. Select the right board, the right port and h
 
 **Windows**:
 
+On Windows the python script uses PySerial to communicate with the ESP32 and it uses psutil to get the the system information. CPU, GPU and fan speed are retreived using 'OpenHardwareMonitorLib.dll'.
 
+Make sure 'OpenHardwareMonitorLib.dll' is in the same folder as the Python script!
+
+`pip install pyserial`
+Docs on PySerial: https://pythonhosted.org/pyserial/
+
+`pip install psutil`
+Docs on psutil: https://psutil.readthedocs.io/en/latest/
+
+`pip install pythonnet`
+Docs on psutil: http://pythonnet.github.io/
+
+**This script needs administrator rights to get system info.**
+
+
+ ![alt text](/assets/windows_comport.png "COM Port on Windows")
 
 
 **MacOs**:
@@ -47,8 +63,8 @@ Docs on PySerial: https://pythonhosted.org/pyserial/
 `pip install psutil`
 Docs on psutil: https://psutil.readthedocs.io/en/latest/
 
-This script needs administrator right to get system info. So to run:
-`sudo python macos_host.py`
+**This script needs administrator rights to get system info. So to run:
+`sudo python macos_host.py`**
 
 On MacOS connection to a COM port is done using it's name. If you have not changed the name, this python script already had the correct COM port in it, so there is no need to change this.
 
