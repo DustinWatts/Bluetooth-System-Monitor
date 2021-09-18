@@ -1,9 +1,7 @@
 # Bluetooth-System-Monitor
- A simple system information monitor using and ESP32 + ILI9488 TFT. Receives data over Serial Bluetooth.
-
  ![alt text](/assets/main_image.jpg "Bluetooth-System-Monitor")
-
- To send data to the screen you can use the provided python scripts for Windows or MacOS. Instruction on how to install and use this are below.
+ 
+ A simple system information monitor using and ESP32 + ILI9488 TFT. Receives data over Serial Bluetooth and thus giving you the option to have it far away from your actual computer. On the computer side you can write your own program for writing over Serial BT, but I have provided python scripts for both Windows and MacOS. Instructions on how to install and use these are below.
 
 # Connecting the screen
 
@@ -34,12 +32,12 @@ Open the sketch in the Arduino IDE. Select the right board, the right port and h
 
 # Computer side installation
 
-Windows:
+**Windows**:
 
 
 
 
-MacOs:
+**MacOs**:
 
 On MacOS the python script uses PySerial to communicate with the ESP32 and it uses psutil to get the the system information. Temperature details are retreived using "powermetrics" which does not need installation.
 
