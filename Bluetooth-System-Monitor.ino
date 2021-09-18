@@ -65,7 +65,7 @@ void loop() {
     
     // Clear values by draw a black rectangle
     tft.fillRect(40,130,440,30,TFT_BLACK);
-    tft.fillRect(355,100,440,30,TFT_BLACK);
+    tft.fillRect(350,100,440,30,TFT_BLACK);
     tft.fillRect(25,280,440,30,TFT_BLACK);
     
     // Make some nice strings for us to print
