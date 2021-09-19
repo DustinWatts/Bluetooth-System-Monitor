@@ -14,6 +14,14 @@ FT6236 ts = FT6236();
 // Change this to match the script on the host
 int redrawtime = 4000;
 
+// The scale of the Y-axis per graph
+int ymax_cpu = 110; // In Celcius
+int ymax_fan = 2000; // In rpm
+int ymax_ram = 32000;  // In MB
+int ymax_hdd = 250;  // In GB
+int ymax_gpu = 110;  // In Celcius
+int ymax_procs = 500;  // In # (numbers)
+
 // Define warning levels, change this as you like
 int warn_cpu = 75; // Higher then, in C
 int warn_rpm = 7000; // Higher then, in RPM
@@ -150,21 +158,21 @@ void loop() {
         if(t_x < screenwidth/3){
     
           Serial.println("Left");
-          drawGraph(0, sizeof(cpu) / sizeof(cpu[0]), 0, 110, cpu, "CPU Temp in Celcius", false);
+          drawGraph(0, sizeof(cpu) / sizeof(cpu[0]), 0, ymax_cpu, cpu, "CPU Temp in Celcius", false);
           graphshowing = true;
           currentgraph = 1;
           
         }else if(t_x < (screenwidth/3)*2){
     
           Serial.println("Middle");
-          drawGraph(0, sizeof(fan) / sizeof(fan[0]), 0, 7000, fan, "Fan Speeds in rpm", false);
+          drawGraph(0, sizeof(fan) / sizeof(fan[0]), 0, ymax_fan, fan, "Fan Speeds in rpm", false);
           graphshowing = true;
           currentgraph = 2;
           
         }else{
     
           Serial.println("Right");
-          drawGraph(0, sizeof(ram) / sizeof(ram[0]), 0, 16000, ram, "Free Memory in MB", false);
+          drawGraph(0, sizeof(ram) / sizeof(ram[0]), 0, ymax_ram, ram, "Free Memory in MB", false);
           graphshowing = true;
           currentgraph = 3;
           
@@ -180,14 +188,14 @@ void loop() {
         if(t_x < screenwidth/3){
     
           Serial.println("Left");
-          drawGraph(0, sizeof(hdd) / sizeof(hdd[0]), 0, 1000, hdd, "Used space in GB", false);
+          drawGraph(0, sizeof(hdd) / sizeof(hdd[0]), 0, ymax_hdd, hdd, "Free space in GB", false);
           graphshowing = true;
           currentgraph = 4;
           
         }else if(t_x < (screenwidth/3)*2){
     
           Serial.println("Middle");
-           drawGraph(0, sizeof(gpu) / sizeof(gpu[0]), 0, 110, gpu, "GPU Temperature in Celcius", false);
+           drawGraph(0, sizeof(gpu) / sizeof(gpu[0]), 0, ymax_gpu, gpu, "GPU Temperature in Celcius", false);
            graphshowing = true;
           currentgraph = 5;
           
@@ -195,7 +203,7 @@ void loop() {
     
           Serial.println("Right");
 
-          drawGraph(0, sizeof(procs) / sizeof(procs[0]), 0, 500, procs, "Number of active processes", false);
+          drawGraph(0, sizeof(procs) / sizeof(procs[0]), 0, ymax_procs, procs, "Number of active processes", false);
           graphshowing = true;
           currentgraph = 6;
           
@@ -215,29 +223,29 @@ if(graphshowing && previousmillis+redrawtime <= millis()){
 
   if(currentgraph == 1){
 
-    drawGraph(0, sizeof(cpu) / sizeof(cpu[0]), 0, 110, cpu, "CPU Temp in Celcius", true);
+    drawGraph(0, sizeof(cpu) / sizeof(cpu[0]), 0, ymax_cpu, cpu, "CPU Temp in Celcius", true);
     
   }else if(currentgraph == 2){
 
-    drawGraph(0, sizeof(fan) / sizeof(fan[0]), 0, 7000, fan, "Fan Speeds in rpm", true);
+    drawGraph(0, sizeof(fan) / sizeof(fan[0]), 0, ymax_fan, fan, "Fan Speeds in rpm", true);
     
   }else if(currentgraph == 3){
 
-    drawGraph(0, sizeof(ram) / sizeof(ram[0]), 0, 16000, ram, "Free Memory in MB", true);
+    drawGraph(0, sizeof(ram) / sizeof(ram[0]), 0, ymax_ram, ram, "Free Memory in MB", true);
    
   }else if(currentgraph == 4){
 
-      drawGraph(0, sizeof(hdd) / sizeof(hdd[0]), 0, 1000, hdd, "Used space in GB", true);
+      drawGraph(0, sizeof(hdd) / sizeof(hdd[0]), 0, ymax_hdd, hdd, "Free space in GB", true);
       
     
   }else if(currentgraph == 5){
 
-    drawGraph(0, sizeof(gpu) / sizeof(gpu[0]), 0, 110, gpu, "GPU Temperature in Celcius", true);
+    drawGraph(0, sizeof(gpu) / sizeof(gpu[0]), 0, ymax_gpu, gpu, "GPU Temperature in Celcius", true);
     
     
   }else if(currentgraph == 6){
 
-    drawGraph(0, sizeof(procs) / sizeof(procs[0]), 0, 500, procs, "Number of active processes", true);
+    drawGraph(0, sizeof(procs) / sizeof(procs[0]), 0, ymax_procs, procs, "Number of active processes", true);
       
   }
   
@@ -431,7 +439,7 @@ void drawGraph(int32_t xmin, int32_t xmax, int32_t ymin, int32_t ymax, int32_t *
     
     //tft.fillCircle((0+margin)+xsteps*i, point, 1, TFT_WHITE);
 
-    if(nextpoint < screenheight-(2*margin) && nextpoint > -1 && point < screenheight-(margin)){
+    if(nextpoint < screenheight-(margin) && nextpoint > -1 && point < screenheight-(margin)){
 
       Serial.printf("%i, %i \n", point, nextpoint);
 

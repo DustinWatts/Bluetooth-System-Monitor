@@ -2,6 +2,9 @@
 # pip install pyserial
 # pip install psutil
 
+# On Mac's with the CPU and GPU in the same die, only the CPU temperature is available
+# so pass the CPU temp to GPU temp
+
 import serial
 import os
 import time
