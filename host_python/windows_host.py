@@ -27,12 +27,12 @@ cpu_temp = ''
 rpm = ''
 gpu_temp = ''
 
-def sendData(temp, rpm, gpu, free_disk, mem_use, procs):
+def sendData(temp, rpm, gpu, free_disk, free_mem, procs):
     try:
         connection = serial.Serial('COM16') # Change this to match your COM port!
-        data = temp + ',' + rpm + ',' + str(mem_use) + ',' + str(free_disk) + ',' + gpu + ',' + str(procs)
+        data = temp + ',' + rpm + ',' + str(free_mem) + ',' + str(free_disk) + ',' + gpu + ',' + str(procs)
         connection.write(data.encode())
-        print("Data written", temp, rpm, mem_use, free_disk, gpu, procs)
+        print("Data written", temp, rpm, free_mem, free_disk, gpu, procs)
         connection.close  
     except Exception as e:
         print(e)
@@ -80,10 +80,10 @@ HardwareHandle = initialize_openhardwaremonitor()
 while(1):
     fetch_stats(HardwareHandle)
     free_disk = int(obj_Disk.used / (1024.0 ** 3))
-    mem_use = int(psutil.virtual_memory().used / (1024 * 1024)) 
+    free_mem = (int(psutil.virtual_memory().total - psutil.virtual_memory().used)/ (1024 * 1024)) 
     proc_counter = 0
     for proc in psutil.process_iter():
         proc_counter += 1
-    sendData(cpu_temp, rpm, gpu_temp, free_disk, mem_use, proc_counter)
+    sendData(cpu_temp, rpm, gpu_temp, free_disk, free_mem, proc_counter)
     time.sleep(updateTime)
     

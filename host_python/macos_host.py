@@ -32,12 +32,12 @@ def FAN_Speed():
             return line.strip('Fan: ').rstrip(' rpm')
     return 'n/a'
 
-def sendData(temp, rpm, gpu, free_disk, mem_use, procs):
+def sendData(temp, rpm, gpu, free_disk, free_mem, procs):
     try:
         connection = serial.Serial('/dev/tty.ESP32-ESP32SPP')
-        data = temp + ',' + rpm + ',' + str(mem_use) + ',' + str(free_disk) + ',' + gpu + ',' + str(procs)
+        data = temp + ',' + rpm + ',' + str(free_mem) + ',' + str(free_disk) + ',' + gpu + ',' + str(procs)
         connection.write(data)
-        print("Data written", temp, rpm, mem_use, free_disk, gpu, procs)
+        print("Data written", temp, rpm, free_mem, free_disk, gpu, procs)
         connection.close  
     except Exception as e:
         print(e)
@@ -46,11 +46,11 @@ def sendData(temp, rpm, gpu, free_disk, mem_use, procs):
 while(1):
     temp = CPU_Temp()
     rpm = FAN_Speed()
-    free_disk = int(obj_Disk.used / (1024.0 ** 3))
-    mem_use = int(psutil.virtual_memory().used / (1024 * 1024)) 
+    free_disk = int(obj_Disk.free / (1024.0 ** 3))
+    free_mem = (int(psutil.virtual_memory().total - psutil.virtual_memory().used)/ (1024 * 1024)) 
     proc_counter = 0
     for proc in psutil.process_iter():
         proc_counter += 1
-    sendData(temp, rpm, temp, free_disk, mem_use, proc_counter)
+    sendData(temp, rpm, temp, free_disk, free_mem, proc_counter)
     time.sleep(updateTime)
     

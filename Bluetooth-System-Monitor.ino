@@ -3,13 +3,43 @@
 #include <SPIFFS.h>
 #include <FS.h>
 
+// On screens without touch, comment this out to only use the overview screen. Graph drawing is disabled
+#define ENABLE_TOUCH
+
+#ifdef ENABLE_TOUCH
+#include <FT6236.h>
+FT6236 ts = FT6236();
+#endif
+
+// Change this to match the script on the host
+int redrawtime = 4000;
+
 // Define warning levels, change this as you like
 int warn_cpu = 75; // Higher then, in C
 int warn_rpm = 7000; // Higher then, in RPM
 int warn_ram = 2000; // Lower then, in MB
-int warn_hdd = 224; // Higher then, in GB
+int warn_hdd = 20; // Lower then, in GB
 int warn_gpu = 70; // Higher then, in Celcius
 int warn_procs = 800; // Higher then, in #
+
+// Place to store the last 21 readings
+int32_t cpu[21] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+int32_t fan[21] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+int32_t ram[21] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+int32_t hdd[21] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+int32_t gpu[21] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+int32_t procs[21] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+
+// Other variables
+int margin = 40;
+int screenwidth = 480;
+int screenheight = 320;
+
+boolean graphshowing = false;
+boolean homescreen = true;
+int currentgraph = 0;
+int previousmillis;
+
 
 // Define the filesystem we are using
 #define FILESYSTEM SPIFFS
@@ -27,6 +57,11 @@ void setup() {
 
   // Begin our filesystem
   FILESYSTEM.begin();
+
+  #ifdef ENABLE_TOUCH
+  //Begin the touchscreen
+  ts.begin(40);
+  #endif
 
   // Initialise the TFT stuff
   tft.begin();
@@ -52,33 +87,211 @@ void setup() {
 
 void loop() {
 
+  // Some variables we need
+  int t_y, t_x;
+  bool pressed = false;
+
+  // Make sure we not use last loop's touch
+  pressed = false;
+
   // Check for incoming Serial Data
   if (BTSerial.available()) {
 
     // We expect incoming data like this: "33,428,8343,16000,68,371" (temp, rpm, mem_use, free_disk, gpu, procs)
-    String temp = BTSerial.readStringUntil(',');
-    String rpm = BTSerial.readStringUntil(',');
-    String ram = BTSerial.readStringUntil(',');
-    String hdd = BTSerial.readStringUntil(',');
-    String gpu = BTSerial.readStringUntil(',');
-    String procs = BTSerial.readStringUntil('/');
+    String cpu_string = BTSerial.readStringUntil(',');
+    String fan_string = BTSerial.readStringUntil(',');
+    String ram_string = BTSerial.readStringUntil(',');
+    String hdd_string = BTSerial.readStringUntil(',');
+    String gpu_string = BTSerial.readStringUntil(',');
+    String procs_string = BTSerial.readStringUntil('/');
+
+    // Add values we got to our arrays
+    addToArray(cpu_string.toInt(), cpu);
+    addToArray(fan_string.toInt(), fan);
+    addToArray(ram_string.toInt(), ram);
+    addToArray(hdd_string.toInt(), hdd);
+    addToArray(gpu_string.toInt(), gpu);
+    addToArray(procs_string.toInt(), procs);       
+        
+  }
+
+#ifdef ENABLE_TOUCH
+
+  if (ts.touched())
+  {
+  
+    // Retrieve a point
+    TS_Point p = ts.getPoint();
+  
+    //Flip things around so it matches our screen rotation
+    p.x = map(p.x, 0, 320, 320, 0);
+    t_y = p.x;
+    t_x = p.y;
+  
+    pressed = true;
     
-    // Clear values by draw a black rectangle
+  }
+
+  // Process Touches
+  if(pressed){
+
+  if(graphshowing){
+
+    drawBmp("/bg.bmp", 0, 0);
+    updateHomeScreen();
+    graphshowing = false;
+    
+  }else{
+
+      if(t_y < screenheight/2){
+    
+      Serial.print("Upper ");
+    
+        if(t_x < screenwidth/3){
+    
+          Serial.println("Left");
+          drawGraph(0, sizeof(cpu) / sizeof(cpu[0]), 0, 110, cpu, "CPU Temp in Celcius", false);
+          graphshowing = true;
+          currentgraph = 1;
+          
+        }else if(t_x < (screenwidth/3)*2){
+    
+          Serial.println("Middle");
+          drawGraph(0, sizeof(fan) / sizeof(fan[0]), 0, 7000, fan, "Fan Speeds in rpm", false);
+          graphshowing = true;
+          currentgraph = 2;
+          
+        }else{
+    
+          Serial.println("Right");
+          drawGraph(0, sizeof(ram) / sizeof(ram[0]), 0, 16000, ram, "Free Memory in MB", false);
+          graphshowing = true;
+          currentgraph = 3;
+          
+        }
+        
+      }
+    
+      else
+      {
+    
+        Serial.print("Lower ");
+    
+        if(t_x < screenwidth/3){
+    
+          Serial.println("Left");
+          drawGraph(0, sizeof(hdd) / sizeof(hdd[0]), 0, 1000, hdd, "Used space in GB", false);
+          graphshowing = true;
+          currentgraph = 4;
+          
+        }else if(t_x < (screenwidth/3)*2){
+    
+          Serial.println("Middle");
+           drawGraph(0, sizeof(gpu) / sizeof(gpu[0]), 0, 110, gpu, "GPU Temperature in Celcius", false);
+           graphshowing = true;
+          currentgraph = 5;
+          
+        }else{
+    
+          Serial.println("Right");
+
+          drawGraph(0, sizeof(procs) / sizeof(procs[0]), 0, 500, procs, "Number of active processes", false);
+          graphshowing = true;
+          currentgraph = 6;
+          
+        }
+    
+      }
+    
+      pressed = false;
+    }
+}
+
+//Redraw graphs if needed
+
+if(graphshowing && previousmillis+redrawtime <= millis()){
+
+  previousmillis = millis();
+
+  if(currentgraph == 1){
+
+    drawGraph(0, sizeof(cpu) / sizeof(cpu[0]), 0, 110, cpu, "CPU Temp in Celcius", true);
+    
+  }else if(currentgraph == 2){
+
+    drawGraph(0, sizeof(fan) / sizeof(fan[0]), 0, 7000, fan, "Fan Speeds in rpm", true);
+    
+  }else if(currentgraph == 3){
+
+    drawGraph(0, sizeof(ram) / sizeof(ram[0]), 0, 16000, ram, "Free Memory in MB", true);
+   
+  }else if(currentgraph == 4){
+
+      drawGraph(0, sizeof(hdd) / sizeof(hdd[0]), 0, 1000, hdd, "Used space in GB", true);
+      
+    
+  }else if(currentgraph == 5){
+
+    drawGraph(0, sizeof(gpu) / sizeof(gpu[0]), 0, 110, gpu, "GPU Temperature in Celcius", true);
+    
+    
+  }else if(currentgraph == 6){
+
+    drawGraph(0, sizeof(procs) / sizeof(procs[0]), 0, 500, procs, "Number of active processes", true);
+      
+  }
+  
+}
+
+#endif
+
+else if (previousmillis+redrawtime <= millis()){
+
+    previousmillis = millis();
+    updateHomeScreen();
+
+}
+
+}
+
+// Function to shift all values in an array to the left and add a value
+void addToArray(int32_t addvalue, int32_t *arr){
+
+  for(int i=0; i<20; i++){
+
+    arr[i] = arr[i+1];
+    
+  }
+
+  arr[20] = addvalue;
+  
+}
+
+// Draw the homescreen
+
+void updateHomeScreen(){
+
+  tft.setFreeFont(&FreeSansBold12pt7b);
+  tft.setTextColor(TFT_SKYBLUE);
+  tft.setTextSize(1);
+  
+    // Make some nice strings for us to print
+    String temp_data = String(cpu[20]) + " C";
+    String rpm_data = String(fan[20]) + " rpm";
+    String ram_data = String(ram[20]) + " MB";
+    
+    String hdd_data = String(hdd[20]) + " GB";
+    String gpu_data = String(gpu[20]) + " C";
+    String procs_data = String(procs[20]);
+  
+      // Clear values by draw a black rectangle
     tft.fillRect(40,130,440,30,TFT_BLACK);
     tft.fillRect(350,100,440,30,TFT_BLACK);
     tft.fillRect(25,280,440,30,TFT_BLACK);
-    
-    // Make some nice strings for us to print
-    String temp_data = String(temp.toInt()) + " C";
-    String rpm_data = String(rpm.toInt()) + " rpm";
-    String ram_data = String(ram.toInt()) + " MB";
-    
-    String hdd_data = String(hdd.toInt()) + " GB";
-    String gpu_data = String(gpu.toInt()) + " C";
-    String procs_data = String(procs.toInt());
-    
-    // Print all the values
-    if(temp.toInt() > warn_cpu){
+
+
+
+    if(cpu[20] > warn_cpu){
       tft.setTextColor(TFT_RED);
       tft.drawCentreString(temp_data, 75, 135, 1);     
     }
@@ -88,7 +301,7 @@ void loop() {
       tft.drawCentreString(temp_data, 75, 135, 1);    
     }
 
-    if(rpm.toInt() > warn_rpm){
+    if(fan[20] > warn_rpm){
       tft.setTextColor(TFT_RED);
       tft.drawCentreString(rpm_data, 244, 135, 1);     
     }
@@ -98,7 +311,7 @@ void loop() {
       tft.drawCentreString(rpm_data, 244, 135, 1);    
     }
 
-    if(ram.toInt() < warn_ram){
+    if(ram[20] < warn_ram){
       tft.setTextColor(TFT_RED);
       tft.drawCentreString(ram_data, 403, 115, 1);;     
     }
@@ -108,7 +321,7 @@ void loop() {
       tft.drawCentreString(ram_data, 403, 115, 1);    
     }
 
-    if(hdd.toInt() > warn_hdd){
+    if(hdd[20] < warn_hdd){
       tft.setTextColor(TFT_RED);
       tft.drawCentreString(hdd_data, 75, 280, 1);    
     }
@@ -118,7 +331,7 @@ void loop() {
       tft.drawCentreString(hdd_data, 75, 280, 1);    
     }
 
-    if(gpu.toInt() > warn_gpu){
+    if(gpu[20] > warn_gpu){
       tft.setTextColor(TFT_RED);
       tft.drawCentreString(gpu_data, 244, 280, 1);     
     }
@@ -128,7 +341,7 @@ void loop() {
       tft.drawCentreString(gpu_data, 244, 280, 1);    
     }
 
-    if(procs.toInt() > warn_procs){
+    if(procs[20] > warn_procs){
       tft.setTextColor(TFT_RED);
       tft.drawCentreString(procs_data, 403, 280, 1);     
     }
@@ -137,8 +350,100 @@ void loop() {
       tft.setTextColor(TFT_SKYBLUE);
       tft.drawCentreString(procs_data, 403, 280, 1);    
     }
-        
+  
+}
+
+// Function to draw a graph
+void drawGraph(int32_t xmin, int32_t xmax, int32_t ymin, int32_t ymax, int32_t *arr, String title, bool redraw){
+
+  tft.setTextColor(TFT_WHITE);
+  tft.setTextSize(1);
+  tft.setTextFont(1); 
+
+  int32_t arrlen = xmax;
+
+  if(redraw){
+
+    tft.fillRect(0+margin+1, 0+margin-1, screenwidth+5-(2*margin),screenheight-(2*margin)-1, TFT_BLACK);
+    tft.drawLine(0+margin, 0+margin, 0+margin,screenheight-margin, TFT_SKYBLUE);
+    tft.drawLine(0+margin, screenheight-margin, screenwidth-margin, screenheight-margin, TFT_SKYBLUE);
+    
   }
+
+  if(!redraw){ // if reDraw, do not draw the x/y axis again
+
+  // If this is the first draw, black the screen first
+  tft.fillScreen(TFT_BLACK);
+    
+  // Draw graph title
+  tft.setTextDatum(ML_DATUM);
+  tft.drawString(title, margin-10, margin-20, 1);
+
+  // Draw empty graph
+  tft.drawLine(0+margin, 0+margin, 0+margin,screenheight-margin, TFT_SKYBLUE);
+  tft.drawLine(0+margin, screenheight-margin, screenwidth-margin, screenheight-margin, TFT_SKYBLUE);
+
+  tft.setTextDatum(MR_DATUM);
+  tft.drawString("0", margin-5, (screenheight-margin)+10, 1);
+  }
+
+  // Draw the Y-axis
+  int32_t yrange = ymax - ymin;
+  int32_t ysteps = (screenheight-2*margin)/5;
+
+  if(!redraw){ // if reDraw, do not draw the x/y axis again
+    
+    for(int i = 1; i < 5; i++){
+      tft.setTextDatum(MR_DATUM);
+      tft.drawNumber(0+((yrange/5)*i), margin-5, (screenheight-margin)-ysteps*i, 1); 
+    }
+  
+
+    tft.drawNumber(ymax, margin-5, (screenheight-margin)-ysteps*5, 1);
+  }
+
+  // Draw the X-axis
+  int32_t xrange = xmax - xmin;
+  int32_t xsteps = (screenwidth-2*margin)/(arrlen-1);
+
+  if(!redraw){ // if reDraw, do not draw the x/y axis again
+    for(int i = 1; i < arrlen-1; i++){
+      tft.setTextDatum(MC_DATUM);
+      tft.drawNumber(i, (0+margin)+xsteps*i, (screenheight-margin)+10, 1); 
+    }
+  
+    tft.drawNumber(xmax-1, (0+margin)+xsteps*(arrlen-1), (screenheight-margin)+10,  1);
+  
+    }
+
+  for(int i = 0; i < arrlen; i++){
+
+    Serial.printf("%i, ", arr[i]);
+    
+  }
+
+  Serial.println();
+  
+  for(int i = 0; i < arrlen-1; i++){
+
+    int32_t point = map(arr[i], ymax, ymin, 0+margin, screenheight-margin);
+    int32_t nextpoint = map(arr[i+1], ymax, ymin, 0+margin, screenheight-margin);
+    
+    //tft.fillCircle((0+margin)+xsteps*i, point, 1, TFT_WHITE);
+
+    if(nextpoint < screenheight-(2*margin) && nextpoint > -1 && point < screenheight-(margin)){
+
+      Serial.printf("%i, %i \n", point, nextpoint);
+
+      tft.drawLine((2+margin)+(xsteps*i), point, (2+margin)+xsteps*(i+1), nextpoint, TFT_WHITE);
+      
+    }
+  }
+
+  tft.setTextColor(TFT_SKYBLUE);
+  tft.setTextSize(3);
+  tft.setFreeFont(&FreeSansBold12pt7b);
+  
 }
 
 
