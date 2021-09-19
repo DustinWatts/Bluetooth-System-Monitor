@@ -26,7 +26,7 @@ int ymax_procs = 500;  // In # (numbers)
 int warn_cpu = 75; // Higher then, in C
 int warn_rpm = 7000; // Higher then, in RPM
 int warn_ram = 2000; // Lower then, in MB
-int warn_hdd = 20; // Lower then, in GB
+int warn_hdd = 35; // Lower then, in GB
 int warn_gpu = 70; // Higher then, in Celcius
 int warn_procs = 800; // Higher then, in #
 
