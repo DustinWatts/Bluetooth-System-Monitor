@@ -15,7 +15,7 @@ import time
 import clr
 import psutil
 
-obj_Disk = psutil.disk_usage('/')
+obj_Disk = psutil.disk_usage('c:\\') # Drive letter with double \\
 updateTime = 4 #number of seconds between each update
 
 # We are only using a few of these, but I left them here so you can experiment
@@ -67,20 +67,20 @@ def parse_sensor(sensor):
         global gpu_temp
         if sensor.Value is not None:
             if sensor.SensorType == sensortypes.index('Temperature') and sensor.Name == 'CPU Package':
-                cpu_temp = str(sensor.Value)
+                cpu_temp = str(int(sensor.Value))
 
             if sensor.SensorType == sensortypes.index('Fan') and sensor.Name == 'Fan #1':
-                rpm = str(sensor.Value)
+                rpm = str(int(sensor.Value))
 
             if sensor.SensorType == sensortypes.index('Temperature') and sensor.Name == 'GPU Core':
-               gpu_temp = str(sensor.Value)
+               gpu_temp = str(int(sensor.Value))
 
 HardwareHandle = initialize_openhardwaremonitor()
 
 while(1):
     fetch_stats(HardwareHandle)
-    free_disk = int(obj_Disk.used / (1024.0 ** 3))
-    free_mem = (int(psutil.virtual_memory().total - psutil.virtual_memory().used)/ (1024 * 1024)) 
+    free_disk = int(obj_Disk.free / (1024.0 ** 3))
+    free_mem = (int((psutil.virtual_memory().total - psutil.virtual_memory().used)/ (1024 * 1024))) 
     proc_counter = 0
     for proc in psutil.process_iter():
         proc_counter += 1
