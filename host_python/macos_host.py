@@ -15,7 +15,7 @@ updateTime = 4 #number of seconds between each update
 
 def sendData(temp, rpm, gpu, free_disk, free_mem, procs):
     try:
-        connection = serial.Serial('/dev/tty.ESP32-ESP32SPP')
+        connection = serial.Serial('/dev/tty.MyDisplay-ESP32SPP')
         data = temp + ',' + rpm + ',' + str(free_mem) + ',' + str(free_disk) + ',' + gpu + ',' + str(procs)
         connection.write(data)
         print("Data written", temp, rpm, free_mem, free_disk, gpu, procs)
