@@ -13,6 +13,16 @@ import psutil
 obj_Disk = psutil.disk_usage('/')
 updateTime = 4 #number of seconds between each update
 
+def sendData(temp, rpm, gpu, free_disk, free_mem, procs):
+    try:
+        connection = serial.Serial('/dev/tty.ESP32-ESP32SPP')
+        data = temp + ',' + rpm + ',' + str(free_mem) + ',' + str(free_disk) + ',' + gpu + ',' + str(procs)
+        connection.write(data)
+        print("Data written", temp, rpm, free_mem, free_disk, gpu, procs)
+        connection.close  
+    except Exception as e:
+        print(e)
+
 def CPU_Temp():
     cpu_temp = [each.strip() for each in (os.popen('sudo powermetrics --samplers smc -i1 -n1')).read().split('\n') if each != '']
     for line in cpu_temp:
@@ -34,17 +44,6 @@ def FAN_Speed():
         if 'Fan' in line:
             return line.strip('Fan: ').rstrip(' rpm')
     return 'n/a'
-
-def sendData(temp, rpm, gpu, free_disk, free_mem, procs):
-    try:
-        connection = serial.Serial('/dev/tty.ESP32-ESP32SPP')
-        data = temp + ',' + rpm + ',' + str(free_mem) + ',' + str(free_disk) + ',' + gpu + ',' + str(procs)
-        connection.write(data)
-        print("Data written", temp, rpm, free_mem, free_disk, gpu, procs)
-        connection.close  
-    except Exception as e:
-        print(e)
-
 
 while(1):
     temp = CPU_Temp()

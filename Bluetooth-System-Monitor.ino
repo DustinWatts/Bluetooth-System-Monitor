@@ -3,10 +3,18 @@
 #include <SPIFFS.h>
 #include <FS.h>
 
-// On screens without touch, comment this out to only use the overview screen. Graph drawing is disabled
-#define ENABLE_TOUCH
+// Choose one of these depending on your setup!
+// ESP32 TouchDown uses CAP_TOUCH
+// DevKitC with ILI9488 uses RES_TOUCH
+// Use NO_TOUCH when your screen does not have touch
 
-#ifdef ENABLE_TOUCH
+//-------------- SELECT --------------------
+//#define ENABLE_CAP_TOUCH
+#define ENABLE_RES_TOUCH
+//#define NO_TOUCH 
+//------------------------------------------
+
+#ifdef ENABLE_CAP_TOUCH
 #include <FT6236.h>
 FT6236 ts = FT6236();
 #endif
@@ -52,6 +60,9 @@ int previousmillis;
 // Define the filesystem we are using
 #define FILESYSTEM SPIFFS
 
+// Define the name of our calibration file
+#define CALIBRATION_FILE "/calibrationData"
+
 // Creating objects
 TFT_eSPI tft = TFT_eSPI();
 BluetoothSerial BTSerial;
@@ -66,18 +77,29 @@ void setup() {
   // Begin our filesystem
   FILESYSTEM.begin();
 
-  #ifdef ENABLE_TOUCH
+  #ifdef ENABLE_CAP_TOUCH
   //Begin the touchscreen
   ts.begin(40);
   #endif
 
+
   // Initialise the TFT stuff
   tft.begin();
   tft.setRotation(1);
+  
+  #ifdef ENABLE_RES_TOUCH
+  touch_calibrate();
+  #endif
+  
   tft.fillScreen(TFT_BLACK);
   tft.setFreeFont(&FreeSansBold12pt7b);
   tft.setTextColor(TFT_SKYBLUE);
   tft.setTextSize(1);
+
+  #ifdef ENABLE_RES_TOUCH
+  touch_calibrate();
+  #endif
+
 
   // Draw Background
   drawBmp("/bg.bmp", 0, 0);
@@ -97,6 +119,7 @@ void loop() {
 
   // Some variables we need
   int t_y, t_x;
+  uint16_t x, y;
   bool pressed = false;
 
   // Make sure we not use last loop's touch
@@ -123,7 +146,7 @@ void loop() {
         
   }
 
-#ifdef ENABLE_TOUCH
+#ifdef ENABLE_CAP_TOUCH
 
   if (ts.touched())
   {
@@ -139,6 +162,23 @@ void loop() {
     pressed = true;
     
   }
+
+#endif
+
+#ifdef ENABLE_RES_TOUCH
+
+  if (tft.getTouch(&x, &y)) {
+
+    t_x = x;
+    t_y = y;
+    pressed = true;
+
+  }
+
+
+
+#endif
+
 
   // Process Touches
   if(pressed){
@@ -251,7 +291,6 @@ if(graphshowing && previousmillis+redrawtime <= millis()){
   
 }
 
-#endif
 
 else if (previousmillis+redrawtime <= millis()){
 
@@ -542,3 +581,56 @@ uint32_t read32(fs::File &f)
   ((uint8_t *)&result)[3] = f.read(); // MSB
   return result;
 }
+
+#ifdef ENABLE_RES_TOUCH
+void touch_calibrate()
+{
+  uint16_t calData[5];
+  uint8_t calDataOK = 0;
+
+  // check if calibration file exists and size is correct
+  if (FILESYSTEM.exists(CALIBRATION_FILE))
+  {
+      fs::File f = FILESYSTEM.open(CALIBRATION_FILE, "r");
+      if (f)
+      {
+        if (f.readBytes((char *)calData, 14) == 14)
+          calDataOK = 1;
+        f.close();
+      }
+  }
+
+  if (calDataOK)
+  {
+    // calibration data valid
+    tft.setTouch(calData);
+  }
+  else
+  {
+    // data not valid so recalibrate
+    tft.fillScreen(TFT_BLACK);
+    tft.setCursor(20, 0);
+    tft.setTextFont(2);
+    tft.setTextSize(1);
+    tft.setTextColor(TFT_WHITE, TFT_BLACK);
+
+    tft.println("Touch corners as indicated");
+
+    tft.setTextFont(1);
+    tft.println();
+
+    tft.calibrateTouch(calData, TFT_MAGENTA, TFT_BLACK, 15);
+
+    tft.setTextColor(TFT_GREEN, TFT_BLACK);
+    tft.println("Calibration complete!");
+
+    // store data
+    fs::File f = FILESYSTEM.open(CALIBRATION_FILE, "w");
+    if (f)
+    {
+      f.write((const unsigned char *)calData, 14);
+      f.close();
+    }
+  }
+}
+#endif
