@@ -56,7 +56,7 @@ Look in the script for the place to change the COM port to match the COM port of
 
 **MacOs**:
 
-On MacOS the python script uses PySerial to communicate with the ESP32 and it uses psutil to get the the system information. Temperature details are retreived using "powermetrics" which does not need installation.
+On MacOS the python script uses PySerial to communicate with the ESP32 and it uses psutil to get the the system information. Temperature details are retreived using "powermetrics" and "smc" which does not need installation.
 
 `pip install pyserial`
 Docs on PySerial: https://pythonhosted.org/pyserial/
