@@ -73,24 +73,29 @@ void setup() {
 
   // Begin regular Serial for debugging
   Serial.begin(115200);
+  Serial.println("Normal Serial begun.");
 
   // Begin our filesystem
-  FILESYSTEM.begin();
+  if(FILESYSTEM.begin()){
+    Serial.println("SPIFFS begun.");
+  }else{
+    Serial.println("SPIFFS failed!");
+  }
 
   #ifdef ENABLE_CAP_TOUCH
   //Begin the touchscreen
-  ts.begin(40);
+  if(ts.begin(40)){
+    Serial.println("Touchscreen begun.");
+  }else{
+    Serial.println("Touchscreen failed!");
+  }
   #endif
 
 
   // Initialise the TFT stuff
   tft.begin();
   tft.setRotation(1);
-  
-  #ifdef ENABLE_RES_TOUCH
-  touch_calibrate();
-  #endif
-  
+    
   tft.fillScreen(TFT_BLACK);
   tft.setFreeFont(&FreeSansBold12pt7b);
   tft.setTextColor(TFT_SKYBLUE);
@@ -103,6 +108,7 @@ void setup() {
 
   // Draw Background
   drawBmp("/bg.bmp", 0, 0);
+  Serial.println("Background drawn.");
 
   // Draw n/a until data is available
   tft.drawCentreString("n/a", 75, 135, 1);
@@ -112,6 +118,8 @@ void setup() {
   tft.drawCentreString("n/a", 75, 280, 1);
   tft.drawCentreString("n/a", 244, 280, 1);
   tft.drawCentreString("n/a", 403, 280, 1);
+  
+  Serial.println("Setup done.");
 
 }
 
@@ -604,6 +612,7 @@ void touch_calibrate()
   {
     // calibration data valid
     tft.setTouch(calData);
+    Serial.println("Touch calibration loaded.");
   }
   else
   {
@@ -623,6 +632,7 @@ void touch_calibrate()
 
     tft.setTextColor(TFT_GREEN, TFT_BLACK);
     tft.println("Calibration complete!");
+    Serial.println("Touch calibration loaded.");
 
     // store data
     fs::File f = FILESYSTEM.open(CALIBRATION_FILE, "w");

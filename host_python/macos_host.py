@@ -17,7 +17,7 @@ def sendData(temp, rpm, gpu, free_disk, free_mem, procs):
     try:
         connection = serial.Serial('/dev/tty.MyDisplay-ESP32SPP')
         data = temp + ',' + rpm + ',' + str(free_mem) + ',' + str(free_disk) + ',' + gpu + ',' + str(procs)
-        connection.write(data)
+        connection.write(data.encode())
         print("Data written", temp, rpm, free_mem, free_disk, gpu, procs)
         connection.close  
     except Exception as e:
