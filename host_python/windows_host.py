@@ -15,7 +15,6 @@ import time
 import clr
 import psutil
 
-obj_Disk = psutil.disk_usage('c:\\') # Drive letter with double \\
 updateTime = 4 #number of seconds between each update
 
 # We are only using a few of these, but I left them here so you can experiment
@@ -30,9 +29,9 @@ gpu_temp = ''
 def sendData(temp, rpm, gpu, free_disk, free_mem, procs):
     try:
         connection = serial.Serial('COM16') # Change this to match your COM port!
-        data = temp + ',' + rpm + ',' + str(free_mem) + ',' + str(free_disk) + ',' + gpu + ',' + str(procs)
+        data = temp + ',' + rpm + ',' + str(free_mem) + ',' + str(free_disk) + ',' + gpu + ',' + str(procs) + '/'
         connection.write(data.encode())
-        print("Data written", temp, rpm, free_mem, free_disk, gpu, procs)
+        print("Data written", data.encode())
         connection.close  
     except Exception as e:
         print(e)
@@ -79,6 +78,7 @@ HardwareHandle = initialize_openhardwaremonitor()
 
 while(1):
     fetch_stats(HardwareHandle)
+    obj_Disk = psutil.disk_usage('c:\\') # Drive letter with double \\
     free_disk = int(obj_Disk.free / (1024.0 ** 3))
     free_mem = (int((psutil.virtual_memory().total - psutil.virtual_memory().used)/ (1024 * 1024))) 
     proc_counter = 0

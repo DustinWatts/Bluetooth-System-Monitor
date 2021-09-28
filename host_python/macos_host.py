@@ -10,15 +10,14 @@ import os
 import time
 import psutil
 
-obj_Disk = psutil.disk_usage('/')
 updateTime = 4 #number of seconds between each update
 
 def sendData(temp, rpm, gpu, free_disk, free_mem, procs):
     try:
         connection = serial.Serial('/dev/tty.MyDisplay-ESP32SPP')
-        data = temp + ',' + rpm + ',' + str(free_mem) + ',' + str(free_disk) + ',' + gpu + ',' + str(procs)
+        data = temp + ',' + rpm + ',' + str(free_mem) + ',' + str(free_disk) + ',' + gpu + ',' + str(procs) + '/'
         connection.write(data.encode())
-        print("Data written", temp, rpm, free_mem, free_disk, gpu, procs)
+        print("Data written", data.encode())
         connection.close  
     except Exception as e:
         print(e)
@@ -48,7 +47,8 @@ def FAN_Speed():
 while(1):
     temp = CPU_Temp()
     rpm = FAN_Speed()
-    free_disk = int(obj_Disk.free / (1024.0 ** 3))
+    obj_Disk = psutil.disk_usage('/')
+    free_disk = int(obj_Disk.free / (1000.0 ** 3))
     free_mem = (int(psutil.virtual_memory().total - psutil.virtual_memory().used)/ (1024 * 1024)) 
     proc_counter = 0
     for proc in psutil.process_iter():
