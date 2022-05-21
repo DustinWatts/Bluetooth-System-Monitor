@@ -69,7 +69,7 @@ BluetoothSerial BTSerial;
 
 void setup() {
   // Begin BT Serial
-  BTSerial.begin("MyDisplay"); // you can change this name, but on MacOs make sure to match your port to this name in the script
+  BTSerial.begin("MyDisplay"); // You can change this name, but on MacOs make sure to match your port to this name in the script
 
   // Begin regular Serial for debugging
   Serial.begin(115200);
