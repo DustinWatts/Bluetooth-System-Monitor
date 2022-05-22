@@ -31,12 +31,12 @@ int ymax_gpu = 110;  // In Celcius
 int ymax_procs = 500;  // In # (numbers)
 
 // Define warning levels, change this as you like
-int warn_cpu = 75; // Higher then, in C
-int warn_rpm = 7000; // Higher then, in RPM
-int warn_ram = 2000; // Lower then, in MB
-int warn_hdd = 35; // Lower then, in GB
-int warn_gpu = 70; // Higher then, in Celcius
-int warn_procs = 800; // Higher then, in #
+int warn_cpu = 75; // Higher than, in C
+int warn_rpm = 7000; // Higher than, in RPM
+int warn_ram = 2000; // Lower than, in MB
+int warn_hdd = 35; // Lower than, in GB
+int warn_gpu = 70; // Higher than, in Celcius
+int warn_procs = 800; // Higher than, in #
 
 // Place to store the last 21 readings
 int32_t cpu[21] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
@@ -69,7 +69,7 @@ BluetoothSerial BTSerial;
 
 void setup() {
   // Begin BT Serial
-  BTSerial.begin("MyDisplay"); // you can change this name, but on MacOs make sure to macth your port to this name in the script
+  BTSerial.begin("MyDisplay"); // You can change this name, but on MacOs make sure to match your port to this name in the script
 
   // Begin regular Serial for debugging
   Serial.begin(115200);
@@ -130,7 +130,7 @@ void loop() {
   uint16_t x, y;
   bool pressed = false;
 
-  // Make sure we not use last loop's touch
+  // Make sure we don't use last loop's touch
   pressed = false;
 
   // Check for incoming Serial Data
@@ -162,7 +162,7 @@ void loop() {
     // Retrieve a point
     TS_Point p = ts.getPoint();
   
-    //Flip things around so it matches our screen rotation
+    // Flip things around so it matches our screen rotation
     p.x = map(p.x, 0, 320, 320, 0);
     t_y = p.x;
     t_x = p.y;
@@ -263,7 +263,7 @@ void loop() {
     }
 }
 
-//Redraw graphs if needed
+// Redraw graphs if needed
 
 if(graphshowing && previousmillis+redrawtime <= millis()){
 
@@ -502,7 +502,7 @@ void drawGraph(int32_t xmin, int32_t xmax, int32_t ymin, int32_t ymax, int32_t *
 }
 
 
-// Functions use to draw a BMP image not important for you
+// Functions used to draw a BMP image, not important for you
 void drawBmp(const char *filename, int16_t x, int16_t y)
 {
 
@@ -596,7 +596,7 @@ void touch_calibrate()
   uint16_t calData[5];
   uint8_t calDataOK = 0;
 
-  // check if calibration file exists and size is correct
+  // Check if calibration file exists and size is correct
   if (FILESYSTEM.exists(CALIBRATION_FILE))
   {
       fs::File f = FILESYSTEM.open(CALIBRATION_FILE, "r");
@@ -610,13 +610,13 @@ void touch_calibrate()
 
   if (calDataOK)
   {
-    // calibration data valid
+    // Calibration data valid
     tft.setTouch(calData);
     Serial.println("Touch calibration loaded.");
   }
   else
   {
-    // data not valid so recalibrate
+    // Data not valid so recalibrate
     tft.fillScreen(TFT_BLACK);
     tft.setCursor(20, 0);
     tft.setTextFont(2);
@@ -634,7 +634,7 @@ void touch_calibrate()
     tft.println("Calibration complete!");
     Serial.println("Touch calibration loaded.");
 
-    // store data
+    // Store data
     fs::File f = FILESYSTEM.open(CALIBRATION_FILE, "w");
     if (f)
     {
