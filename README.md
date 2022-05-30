@@ -3,7 +3,7 @@
 
  A handy little system information monitor using and ESP32 + ILI9488 TFT. Receives data over Serial Bluetooth and thus giving you the option to have it far away from your actual computer. On the computer side you can write your own program for writing over Serial BT, but I have provided python scripts for both Windows and MacOS. Instructions on how to install and use these are below.
 
-# Connecting the screen
+## Connecting the screen
 
 Use the image below to connect the screen to the ESP32.
 
@@ -11,11 +11,11 @@ Use the image below to connect the screen to the ESP32.
 
   ![alt text](/assets/ESP_TFT_WIRING.png "ESP32 TFT Wiring")
 
-# Using the ESP32 TouchDown
+## Using the ESP32 TouchDown
 
 For this project you can also use the ESP32 TouchDown (which I used in the image above). You can buy it here: https://www.esp32touchdown.com/
 
-# ESP32 side installation
+## ESP32 side installation
 
 To use this sketch, you will need the Arduino IDE (1.8.10 or higher). You will also need to add the ESP32-Arduino core (https://github.com/espressif/arduino-esp32) to your board manager.
 
@@ -30,7 +30,7 @@ In the sketch, you can set some warning levels. This will turn the text read if 
 Open the sketch in the Arduino IDE. Select the right board, the right port and hit 'Upload'. After this, you will also need to upload the `data` folder. Because the background image also needs to be uploaded. You can use the "ESP Sketch Data Upload" tool that can be found here: https://github.com/me-no-dev/arduino-esp32fs-plugin
 ![ESP Sketch Data](http://dustinwatts.nl/freetouchdeck/images/ftd_esp_sketch_data.png)
 
-# Computer side installation
+## Computer side installation
 
 **Windows**:
 
@@ -72,6 +72,17 @@ On MacOS connection to a COM port is done using it's name. If you have not chang
  ![alt text](/assets/macos_comport.png "COM Port on MacOS")
 
 
-# Help
+## Support Me
 
-You can join my Discord server where I can help you out. https://discord.gg/RE3XevS
+If you like what I am doing, there are a number of ways you can support me. 
+
+| Platform | Link|
+|:-----:|:-----|
+| [<img src="https://github.com/DustinWatts/small_logos/blob/main/twitter_logo.png" alt="Twtter" width="24"/>](https://twitter.com/dustinwattsnl "Follow me on Twitter") | You can follow me on Twitter: [@dustinwattsnl](https://twitter.com/dustinwattsnl "Follow me on Twitter")|
+| [<img src="https://github.com/DustinWatts/small_logos/blob/main/youtube_logo.png" alt="YouTube" width="32"/>](https://www.youtube.com/dustinwatts "Subscrive to my YouTube channel") | You can subscribe to my channel on Youtube: [/dustinWatts](https://www.youtube.com/dustinwatts "Subscribe to my YouTube channel") |
+| [<img src="https://github.com/DustinWatts/small_logos/blob/main/patreon_logo.png" alt="Patreon" width="32"/>](https://www.patreon.com/dustinwatts) | You can support me by becoming a patron on Patreon: https://www.patreon.com/dustinwatts |
+| [<img src="https://github.com/DustinWatts/small_logos/blob/main/paypalme_logo.png" alt="PayPal.me" width="32"/>](https://www.paypal.me/dustinwattsnl) | You can make a one time donation using PayPal.me: https://www.paypal.me/dustinwattsnl |
+
+## Get help
+
+For quick access to help you can join my Discord server: https://discord.gg/RE3XevS
