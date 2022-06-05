@@ -8,12 +8,13 @@
 # Make sure 'OpenHardwareMonitorLib.dll' is in the same folder as this Python script!
 #
 # Change your COM port to match that of your COM port!
-
+from __future__ import print_function
 import serial
 import os
 import time
 import clr
 import psutil
+import ctypes, sys
 
 updateTime = 4 #number of seconds between each update
 
@@ -28,7 +29,7 @@ gpu_temp = ''
 
 def sendData(temp, rpm, gpu, free_disk, free_mem, procs):
     try:
-        connection = serial.Serial('COM16') # Change this to match your COM port!
+        connection = serial.Serial('COM35') # Change this to match your COM port!
         data = temp + ',' + rpm + ',' + str(free_mem) + ',' + str(free_disk) + ',' + gpu + ',' + str(procs) + '/'
         connection.write(data.encode())
         print("Data written", data.encode())
@@ -76,14 +77,27 @@ def parse_sensor(sensor):
 
 HardwareHandle = initialize_openhardwaremonitor()
 
-while(1):
-    fetch_stats(HardwareHandle)
-    obj_Disk = psutil.disk_usage('c:\\') # Drive letter with double \\
-    free_disk = int(obj_Disk.free / (1024.0 ** 3))
-    free_mem = (int((psutil.virtual_memory().total - psutil.virtual_memory().used)/ (1024 * 1024))) 
-    proc_counter = 0
-    for proc in psutil.process_iter():
-        proc_counter += 1
-    sendData(cpu_temp, rpm, gpu_temp, free_disk, free_mem, proc_counter)
-    time.sleep(updateTime)
+def is_admin():
+    try:
+        return ctypes.windll.shell32.IsUserAnAdmin()
+    except:
+        return False
+
+if is_admin():
+    # 将要运行的代码加到这里
+    while(1):
+        fetch_stats(HardwareHandle)
+        obj_Disk = psutil.disk_usage('c:\\') # Drive letter with double \\
+        free_disk = int(obj_Disk.free / (1024.0 ** 3))
+        free_mem = (int((psutil.virtual_memory().total - psutil.virtual_memory().used)/ (1024 * 1024))) 
+        proc_counter = 0
+        for proc in psutil.process_iter():
+            proc_counter += 1
+        sendData(cpu_temp, rpm, gpu_temp, free_disk, free_mem, proc_counter)
+        time.sleep(updateTime)
+else:
+    if sys.version_info[0] == 3:
+    	ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, __file__, None, 1)
+    else:#in python2.x
+        ctypes.windll.shell32.ShellExecuteW(None, u"runas", unicode(sys.executable), unicode(__file__), None, 1)
     
