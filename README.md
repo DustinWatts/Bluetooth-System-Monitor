@@ -30,13 +30,11 @@ In the sketch, you can set some warning levels. This will turn the text read if 
 Open the sketch in the Arduino IDE. Select the right board, the right port and hit 'Upload'. After this, you will also need to upload the `data` folder. Because the background image also needs to be uploaded. You can use the "ESP Sketch Data Upload" tool that can be found here: https://github.com/me-no-dev/arduino-esp32fs-plugin
 ![ESP Sketch Data](http://dustinwatts.nl/freetouchdeck/images/ftd_esp_sketch_data.png)
 
-## Computer side installation
+## Computer side installation on Windows:
 
-***Windows***:
+On Windows the python script uses PySerial to communicate with the ESP32 and it uses psutil to get the the system information. CPU, GPU and fan speed are retreived using `OpenHardwareMonitorLib.dll`. [More information about OpenHardwareMonitorLib.dll](https://openhardwaremonitor.org/)
 
-On Windows the python script uses PySerial to communicate with the ESP32 and it uses psutil to get the the system information. CPU, GPU and fan speed are retreived using 'OpenHardwareMonitorLib.dll'.
-
-Make sure 'OpenHardwareMonitorLib.dll' is in the same folder as the Python script!
+Make sure `OpenHardwareMonitorLib.dll` is in the same folder as the Python script!
 
 `pip install pyserial`
 Docs on PySerial: https://pythonhosted.org/pyserial/
@@ -47,22 +45,22 @@ Docs on psutil: https://psutil.readthedocs.io/en/latest/
 `pip install pythonnet`
 Docs on psutil: http://pythonnet.github.io/
 
-**This script needs administrator rights to get system info.**
-
 Look in the script for the place to change the COM port to match the COM port of the ESP32:
 
  ![alt text](/assets/windows_comport.png "COM Port on Windows")
  
- To run: **`sudo python windows_host.py`** or **`sudo python3 windows_host.py`**
+ _**Running the script**_
+ 
+ **This script needs administrator rights to get system info. And should be run from the command line as an Aministrator**
+ To run: **`python windows_host.py`** or **`python3 windows_host.py`**
  
  Follow this tutorial if if you get an error because Python is not in your PATH variables:
  [Add Python to PATH variables](https://www.makeuseof.com/python-windows-path/).
  
+ 
+## Computer side installation on MacOs:
 
-
-**MacOs**:
-
-On MacOS the python script uses PySerial to communicate with the ESP32 and it uses psutil to get the the system information. Temperature details are retreived using "powermetrics" and "smc" which does not need installation.
+On MacOS the python script uses `PySerial` to communicate with the ESP32 and it uses `psutil` to get the the system information. Temperature details are retreived using `powermetrics` and `smc` which does not need installation.
 
 `pip install pyserial`
 Docs on PySerial: https://pythonhosted.org/pyserial/
@@ -70,8 +68,10 @@ Docs on PySerial: https://pythonhosted.org/pyserial/
 `pip install psutil`
 Docs on psutil: https://psutil.readthedocs.io/en/latest/
 
+_**Running the script**_
+
 **This script needs administrator rights to get system info. So to run:
-`sudo python macos_host.py`** or `sudo python3 macos_host.py`**
+`sudo python macos_host.py`** or **`sudo python3 macos_host.py`**
 
 On MacOS connection to a COM port is done using it's name. If you have not changed the name, this python script already had the correct COM port in it, so there is no need to change this.
 
