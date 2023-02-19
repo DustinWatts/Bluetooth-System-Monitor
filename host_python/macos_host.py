@@ -1,6 +1,8 @@
 # Install the following Python modules:
 # pip install pyserial
 # pip install psutil
+#
+# or pip install -r requirements_mac.txt
 
 # On Mac's with the CPU and GPU in the same dye, only the CPU temperature is available
 # so pass the CPU temp to GPU temp
