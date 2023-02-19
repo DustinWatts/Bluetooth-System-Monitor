@@ -4,10 +4,12 @@
 # pip install pyserial
 # pip install psutil
 # pip install pythonnet
+#
+# or pip install -r requirements.txt
 # 
 # Make sure 'OpenHardwareMonitorLib.dll' is in the same folder as this Python script!
 #
-# Change your COM port to match that of your COM port!
+# Change the COM port under connection (line 31) to match that of the COM port the device is on!
 
 import serial
 import os
@@ -15,7 +17,7 @@ import time
 import clr
 import psutil
 
-updateTime = 4 #number of seconds between each update
+updateTime = 4 # number of seconds between each update
 
 # We are only using a few of these, but I left them here so you can experiment
 
@@ -28,7 +30,7 @@ gpu_temp = ''
 
 def sendData(temp, rpm, gpu, free_disk, free_mem, procs):
     try:
-        connection = serial.Serial('COM16') # Change this to match your COM port!
+        connection = serial.Serial('COM16') # <- Change this to match your COM port!
         data = temp + ',' + rpm + ',' + str(free_mem) + ',' + str(free_disk) + ',' + gpu + ',' + str(procs) + '/'
         connection.write(data.encode())
         print("Data written", data.encode())
