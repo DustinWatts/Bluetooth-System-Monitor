@@ -36,6 +36,11 @@ On Windows the python script uses PySerial to communicate with the ESP32 and it 
 
 Make sure `OpenHardwareMonitorLib.dll` is in the same folder as the Python script!
 
+Install the requirements
+`pip install -r requirements_windows.txt`
+
+Or do it manually one by one:
+
 `pip install pyserial`
 Docs on PySerial: https://pythonhosted.org/pyserial/
 
@@ -61,6 +66,11 @@ Look in the script for the place to change the COM port to match the COM port of
 ## Computer side installation on MacOs:
 
 On MacOS the python script uses `PySerial` to communicate with the ESP32 and it uses `psutil` to get the the system information. Temperature details are retreived using `powermetrics` and `smc` which does not need installation.
+
+Install the requirements
+`pip install -r requirements_mac.txt`
+
+Or do it manually one by one:
 
 `pip install pyserial`
 Docs on PySerial: https://pythonhosted.org/pyserial/
